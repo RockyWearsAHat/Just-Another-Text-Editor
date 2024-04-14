@@ -35,7 +35,7 @@ export default class {
     this.editor.on("change", () => {
       clearTimeout(timeout);
       localStorage.setItem("content", this.editor.getValue());
-      timeout = setTimeout(async () => {
+      timeout = setTimeout(() => {
         putDb(localStorage.getItem("content"));
       }, 300); //Autosave, I'm sure there is some way to do this with onbeforeunload
       //Or when the user leaves/refreshes the page, but I don't know, if someone can type
