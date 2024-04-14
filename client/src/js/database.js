@@ -17,8 +17,13 @@ export const putDb = async (content) => {
   const db = await openDB("jate", 1);
   const tx = db.transaction("jate", "readwrite");
   const store = tx.objectStore("jate");
+  const installedContent = await store.getAll();
+  const installed =
+    installedContent.length && installedContent[0].installed
+      ? installedContent[0].installed
+      : false;
   await store.clear();
-  await store.put({ content });
+  await store.put({ content, installed });
   await tx.done;
   return true;
 };
@@ -30,11 +35,42 @@ export const getDb = async () => {
   const store = tx.objectStore("jate");
   let data = await store.getAll();
   let rtnData = "";
-  if (data == null || data.length == 0) {
+  if (data == null || data.length == 0 || !data[0].content) {
     rtnData = "";
   } else {
     rtnData = data[0].content;
   }
+  await tx.done;
+  return rtnData;
+};
+
+export const setInstalled = async (val) => {
+  const db = await openDB("jate", 1);
+  const tx = db.transaction("jate", "readwrite");
+  const store = tx.objectStore("jate");
+  const contentContent = await store.getAll();
+  const content =
+    contentContent.length && contentContent[0].content
+      ? contentContent[0].content
+      : "";
+  await store.clear();
+  await store.put({ content, installed: val });
+  await tx.done;
+  return true;
+};
+
+export const getInstalled = async () => {
+  const db = await openDB("jate", 1);
+  const tx = db.transaction("jate", "readonly");
+  const store = tx.objectStore("jate");
+  let data = await store.getAll();
+  let rtnData = false;
+  if (data == null || data.length == 0 || !data[0].installed) {
+    rtnData = false;
+  } else {
+    rtnData = data[0].installed;
+  }
+  await tx.done;
   return rtnData;
 };
 
