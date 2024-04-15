@@ -42,10 +42,24 @@ module.exports = () => {
         ],
         runtimeCaching: [
           {
-            urlPattern: [/\/icons\/.*/i, /\/assets\/.*/i],
+            urlPattern: [/\/icons\/.*/i, /\/assets\/.*/i, /\*.js/i],
             handler: "CacheFirst",
             options: {
               cacheName: "local-images",
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+          {
+            urlPattern: /\*.js/i,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "scripts",
               expiration: {
                 maxEntries: 50,
                 maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
